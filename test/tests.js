@@ -996,7 +996,7 @@ describe('Appboy Forwarder', function () {
         // Braze's API expects a year from us, this test will break every year,
         // since setting the age = 10 in 2021 will mean the user is born in 2011,
         // but setting it in 2023 means the year is 2013.
-        window.appboy.getUser().yearOfBirth.should.equal(2013);
+        window.appboy.getUser().yearOfBirth.should.equal(2015);
         window.appboy.getUser().dayOfBirth.should.equal(1);
         window.appboy.getUser().monthOfBirth.should.equal(1);
         window.appboy.getUser().phoneSet.should.equal('1234567890');
@@ -1226,6 +1226,34 @@ USD,
         window.appboy.should.have.property('baseUrl', 'sdk.fra-01.braze.eu');
     });
 
+    it('should use the AU data center when dataCenterLocation is set to AU and no host is passed', function() {
+        reportService.reset();
+        window.appboy = new MockAppboy();
+
+        mParticle.forwarder.init(
+            {
+                apiKey: '123456',
+                dataCenterLocation: 'AU',
+            },
+            reportService.cb,
+            true,
+            null,
+            {
+                gender: 'm',
+            },
+            [
+                {
+                    Identity: 'testUser',
+                    Type: IdentityType.CustomerId,
+                },
+            ],
+            '1.1',
+            'My App'
+        );
+
+        window.appboy.should.have.property('baseUrl', 'sdk.au-01.braze.com');
+    });
+
     it('should use the 01 clusterMapping url when 01 number is passed to cluster', function() {
         reportService.reset();
         window.appboy = new MockAppboy();
@@ -1362,6 +1390,33 @@ USD,
         );
 
         window.appboy.baseUrl.should.equal('sdk.iad-06.braze.com');
+    });
+
+    it('should use the 07 clusterMapping url when 07 number is passed to cluster', function() {
+        reportService.reset();
+        window.appboy = new MockAppboy();
+        mParticle.forwarder.init(
+            {
+                apiKey: '123456',
+                cluster: '07',
+            },
+            reportService.cb,
+            true,
+            null,
+            {
+                gender: 'm',
+            },
+            [
+                {
+                    Identity: 'testUser',
+                    Type: IdentityType.CustomerId,
+                },
+            ],
+            '1.1',
+            'My App'
+        );
+
+        window.appboy.baseUrl.should.equal('sdk.iad-07.braze.com');
     });
 
     it('should use the 08 clusterMapping url when 08 number is passed to cluster', function() {
