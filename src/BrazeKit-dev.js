@@ -994,13 +994,19 @@ var constructor = function () {
     function decodeSubscriptionGroupMappings(subscriptionGroupSetting) {
         var subscriptionGroupIds = {}; 
       	var decodedSetting = subscriptionGroupSetting.replace(/&quot;/g, '"');
-        var parsedSetting = JSON.parse(decodedSetting);
-        for (let subscriptionGroupMap of parsedSetting) {
-            var key = subscriptionGroupMap.map;
-            var value = subscriptionGroupMap.value;
-            subscriptionGroupIds[key] = value;
+        try {
+            var parsedSetting = JSON.parse(decodedSetting);
+            for (let subscriptionGroupMap of parsedSetting) {
+                var key = subscriptionGroupMap.map;
+                var value = subscriptionGroupMap.value;
+                subscriptionGroupIds[key] = value;
+            }
+            return subscriptionGroupIds;
+        } catch (e) {
+            console.log(
+                'Unable to configure Braze SubscriptionGroupIds: ' + e.toString()
+            );
         }
-        return subscriptionGroupIds;
     }
 
     function getSanitizedStringForBraze(value) {
